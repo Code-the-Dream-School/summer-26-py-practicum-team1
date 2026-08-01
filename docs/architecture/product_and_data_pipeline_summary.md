@@ -11,9 +11,9 @@ The application requires:
 - Timestamps to track air quality changes over time.
 
 ## 3. ETL Pipeline Stages 
-- **Extract**: Fetches raw location and historical air pollution JSON payloads from the OpenWeather API endpoints and stores raw responses in PostgreSQL.
+- **Extract**: Fetches raw location and historical air pollution JSON payloads from the OpenWeather API endpoints and stores raw responses in a database.
 - **Transform**: Parses and cleans the payload, maps city names to coordinates, deduplicates entries, standardizes timestamps, and derives analytical metrics.
-- **Load**: Saves the clean gold dataset, making it ready for analytics and visualization.
+- **Load**: Saves the cleaned dataset, making it ready for analytics and visualization.
 
 ## 4. Supporting the Dashboard
 The backend prepares the data in advance and serves it directly to the dashboard. This allows React to render charts instantly without waiting on slow third-party API responses.
