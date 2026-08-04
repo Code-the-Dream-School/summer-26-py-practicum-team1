@@ -66,5 +66,9 @@ Browse `docs/README.md` for the full categorized index.
 - `docs/reference/data_dictionary.md`
 - `docs/reference/openweather_environmental_api_fields_reference.md`
 
-Aiperi Amanturova
-Sergei - practice pull request
+
+## Who has read this?
+
+* Aiperi Amanturova
+* Sergei - practice pull request
+* Todd Bradley
