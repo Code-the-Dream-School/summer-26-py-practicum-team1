@@ -18,7 +18,7 @@ One student should complete the initial setup below. These instructions follow t
 
 1. Sign into your GitHub, and create a repository for your team's City Air Tracker project. It must be a public repository. Do not create a `.gitignore` or a `README.md`.
 2. On your computer, clone the [`city-air-tracker-student`](https://github.com/Code-the-Dream-School/city-air-tracker-student) repository. (Do not clone the repository you just created.)
-3. Change to the `city-air-tracker-student` directory you just cloned. Enter the following commands, replacing `team-repository-owner` and `team-repository-name` with the values for the repository your team created:
+3. Change to the `city-air-tracker-student` directory you just cloned. Enter the following commands, replacing `team-repository-owner` and `team-repository-name` with the values for the repository[...]
 
 ```shell
 # if you use SSH authentication:
@@ -68,4 +68,9 @@ Browse `docs/README.md` for the full categorized index.
 
 ## Practice Pull Requests
 
+## Who has read this?
+
 - Dmitriy
+- Aiperi Amanturova
+- Sergei - practice pull request
+- Todd Bradley
