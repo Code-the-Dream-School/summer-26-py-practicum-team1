@@ -42,3 +42,16 @@ Use these docs for field-level details, schemas, and API artifacts.
 - `reference/data_dictionary.md`
 - `reference/openweather_environmental_api_fields_reference.md`
 - `reference/openweather-air-pollution.postman_collection.json`
+
+# Architecture Diagrams
+
+- `City_Air_Tracker.drawio` – editable source file.
+- `City_Air_Tracker.drawio.png` – exported image for quick viewing.
+
+To edit the diagram:
+
+1. Open https://app.diagrams.net
+2. Select **File → Open From → Device**
+3. Open `City_Air_Tracker.drawio`
+4. Save the `.drawio` file and export an updated `.png`
+5. Commit both files
