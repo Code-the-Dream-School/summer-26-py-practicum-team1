@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document explains how the City Air Tracker pipeline works from start to finish. As I understand it, the pipeline collects air pollution data, prepares it, saves it, and makes it ready for the dashboard.
+This document specifies the planned runtime flow for the City Air Tracker pipeline. The pipeline collects air pollution data, transforms it, stores the processed data, and creates the dashboard display.
 
 ## Runtime Flow
 
@@ -11,9 +11,9 @@ flowchart TD
     A[Start] --> B[Read city list and settings]
     B --> C[Geocode the city]
     C --> D[Get air pollution data from OpenWeather]
-    D --> E[Save raw data]
-    E --> F[Clean and organize the data]
-    F --> G[Create the gold dataset]
+    D --> E[Transform and validate the data]
+    E --> F[Create the gold dataset]
+    F --> G[store gold dataset in postgrsSQL]
     G --> H[Backend API reads the data]
     H --> I[React dashboard shows charts]
     I --> J[End]
@@ -21,25 +21,25 @@ flowchart TD
 
 ## Step 1 - Read Configuration
 
-The pipeline starts by reading the settings.
+The pipeline starts by loading the the city configuration and runtime setting defined in the project input contract.
 
 It reads:
 
 - the city list
-- the API key
-- the database connection
+- City configuration
+- runtime settings
 
 If something is missing, the pipeline should stop and show an error.
 
 ## Step 2 - Extract
 
-The pipeline gets information from OpenWeather.
+The pipeline gets retrives air pollution data from the openWeather Air pollution API.
 
 First, it finds the city's latitude and longitude.
 
 Then it downloads the historical air pollution data.
 
-The raw data is saved in the database.
+The raw data remains in memory and is passed to the transformation step.
 
 ## Step 3 - Transform
 
@@ -50,13 +50,13 @@ The pipeline:
 - removes duplicate data
 - fixes timestamps
 - checks for missing information
-- prepares the data for the dashboard
+- - converts the data into the format required for the PostgreSQL database and dashboard
 
 ## Step 4 - Load
 
-After the data is cleaned, it is saved as the **gold dataset**.
+After the data is cleaned and transformed, the gold dataset is written to PostgreSQL.
 
-The gold dataset is the final version that the dashboard uses.
+The backend API reads the gold dataset from PostgreSQL, and the React dashboard displays the processed air quality data.
 
 ## Logging
 
@@ -79,13 +79,3 @@ If something goes wrong, the pipeline should:
 - retry if the API is temporarily unavailable
 - avoid saving incomplete data
 
-## Why This Pipeline Is Important
-
-The pipeline prepares the data before the dashboard needs it.
-
-Because of this:
-
-- the dashboard loads faster
-- the data is cleaner
-- the system is easier to maintain
-- users do not have to wait for live API calls every time they open the dashboard
