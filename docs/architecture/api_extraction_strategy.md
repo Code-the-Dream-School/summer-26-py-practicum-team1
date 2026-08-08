@@ -77,7 +77,7 @@ the extractor should construct the OpenWeather query as:
 Charlotte,NC,US
 ```
 
-The selected geocoding result supplies `lat` and `lon`. The result should also be validated against the requested city, country code, and optional state before extraction continues.
+The Direct Geocoding response supplies `lat` and `lon` together with location metadata such as `name`, `country`, and, when available, `state`. The extractor should use this metadata to select the candidate that best matches the requested location. A separate reverse-geocoding request is not required for the MVP.
 
 ---
 
@@ -100,6 +100,8 @@ Required request parameters:
 | `appid` | Environment configuration | OpenWeather API key |
 
 The extractor should validate that `start <= end` before making the request.
+
+A successful request returns a JSON response containing the requested coordinates and a `list` of time-indexed air-pollution measurements. The fields prioritized for the MVP are summarized below.
 
 ---
 
@@ -144,6 +146,8 @@ This decision does not define the persistence mechanism, database, table, or sch
 ---
 
 ## Common Extraction Concerns
+
+The following conditions are expected failure cases that the extraction implementation should handle. This document defines the intended behavior at a high level; error-handling code is outside the scope of SCRUM-17.
 
 - **Invalid locations:** Reject city records that lack required `city` or `country_code` values before making a request.
 - **Ambiguous locations:** Do not silently accept an unrelated first result; compare candidates with the requested city, country code, and optional state.
