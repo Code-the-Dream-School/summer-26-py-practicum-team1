@@ -35,3 +35,25 @@ def test_geocode_location_returns_coordinates(monkeypatch):
     "lat": 35.2271,
     "lon": -80.8431,
   }
+
+def test_geocode_location_not_found(monkeypatch):
+  location = {
+    "city": "UnknownCity",
+    "country_code": "US",
+    "state": "",
+  }
+
+  monkeypatch.setenv(
+    "OPENWEATHER_API_KEY",
+    "test-key",
+  )
+
+  with patch(
+    "pipeline.extract.openweather._get_json",
+    return_value=[],
+  ):
+    try:
+      geocode_location(location)
+      assert False
+    except ValueError as exc:
+      assert "Location not found" in str(exc)
