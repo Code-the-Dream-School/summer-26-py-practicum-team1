@@ -1,9 +1,30 @@
+import os
 import requests
 
-GEOCODING_URL = "https://api.openweathermap.org/geo/1.0/direct"
 
-def geocode_location(location, api_key):
-  query = f"{location['city']}, {location.get('state', '')}, {location['country_code']}"
+GEOCODING_URL = "https://api.openweathermap.org/geo/1.0/direct"
+AIR_POLLUTION_HISTORY_URL = (
+  "https://api.openweathermap.org/data/2.5/air_pollution/history"
+)
+
+
+def get_api_key():
+  api_key = os.getenv("OPENWEATHER_API_KEY")
+
+  if not api_key:
+    raise ValueError("OPENWEATHER_API_KEY is not set")
+
+  return api_key
+
+
+def geocode_location(location):
+  api_key = get_api_key()
+
+  query = (
+    f"{location['city']},"
+    f"{location.get('state', '')},"
+    f"{location['country_code']}"
+  )
 
   params = {
     "q": query,
@@ -18,12 +39,12 @@ def geocode_location(location, api_key):
   )
 
   response.raise_for_status()
-  
+
   data = response.json()
 
   if not data:
     raise ValueError(f"Location not found: {query}")
-  
+
   first_match = data[0]
 
   return {
@@ -31,12 +52,10 @@ def geocode_location(location, api_key):
     "lon": first_match["lon"],
   }
 
-AIR_POLLUTION_HISTORY_URL = (
-    "https://api.openweathermap.org/data/2.5/air_pollution/history"
-)
 
+def fetch_air_pollution_history(lat, lon, start, end):
+  api_key = get_api_key()
 
-def fetch_air_pollution_history(lat, lon, start, end, api_key):
   if start > end:
     raise ValueError("Start time must be before or equal to end time")
 
