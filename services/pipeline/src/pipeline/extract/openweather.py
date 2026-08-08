@@ -16,6 +16,18 @@ def get_api_key():
 
   return api_key
 
+def _get_json(url, params):
+  try:
+    response = requests.get(
+      url,
+      params=params,
+      timeout=30,
+    )
+    response.raise_for_status()
+    return response.json()
+
+  except requests.RequestException as exc:
+    raise RuntimeError(f"OpenWeather request failed: {exc}") from exc
 
 def geocode_location(location):
   api_key = get_api_key()
@@ -32,15 +44,7 @@ def geocode_location(location):
     "appid": api_key,
   }
 
-  response = requests.get(
-    GEOCODING_URL,
-    params=params,
-    timeout=30,
-  )
-
-  response.raise_for_status()
-
-  data = response.json()
+  data = _get_json(GEOCODING_URL, params)
 
   if not data:
     raise ValueError(f"Location not found: {query}")
@@ -67,15 +71,7 @@ def fetch_air_pollution_history(lat, lon, start, end):
     "appid": api_key,
   }
 
-  response = requests.get(
-    AIR_POLLUTION_HISTORY_URL,
-    params=params,
-    timeout=30,
-  )
-
-  response.raise_for_status()
-
-  data = response.json()
+  data = _get_json(AIR_POLLUTION_HISTORY_URL, params)
 
   if not data.get("list"):
     raise ValueError("No air pollution data returned")
