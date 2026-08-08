@@ -78,12 +78,9 @@ def test_geocode_location_not_found(monkeypatch):
   with patch(
     "pipeline.extract.openweather._get_json",
     return_value=[],
-  ):
-    try:
+):
+    with pytest.raises(ValueError, match="Location not found"):
       geocode_location(location)
-      assert False
-    except ValueError as exc:
-      assert "Location not found" in str(exc)
 
 
 
