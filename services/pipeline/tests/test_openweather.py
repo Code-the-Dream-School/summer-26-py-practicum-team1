@@ -2,8 +2,6 @@ import pytest
 
 from unittest.mock import patch
 
-from pipeline.extract.openweather import geocode_location
-
 from pipeline.extract.openweather import (
   geocode_location,
   fetch_air_pollution_history,
@@ -124,3 +122,28 @@ def test_fetch_air_pollution_history_returns_data(monkeypatch):
     )
 
   assert result == fake_response
+
+def test_geocode_location_without_state(monkeypatch):
+  location = {
+    "city": "London",
+    "country_code": "GB",
+  }
+
+  fake_response = [
+    {
+      "lat": 51.5074,
+      "lon": -0.1278,
+    }
+  ]
+
+  monkeypatch.setenv("OPENWEATHER_API_KEY", "test-key")
+
+  with patch(
+    "pipeline.extract.openweather._get_json",
+    return_value=fake_response,
+  ) as mock_get_json:
+    geocode_location(location)
+
+  params = mock_get_json.call_args.args[1]
+
+  assert params["q"] == "London,GB"

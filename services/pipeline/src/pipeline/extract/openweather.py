@@ -32,15 +32,18 @@ def _get_json(url, params):
 def geocode_location(location):
   api_key = get_api_key()
 
-  query = (
-    f"{location['city']},"
-    f"{location.get('state', '')},"
-    f"{location['country_code']}"
-  )
+  query_parts = [location["city"]]
+
+  if location.get("state"):
+    query_parts.append(location["state"])
+
+  query_parts.append(location["country_code"])
+
+  query = ",".join(query_parts)
 
   params = {
     "q": query,
-    "limit": 5,
+    "limit": 1,
     "appid": api_key,
   }
 
