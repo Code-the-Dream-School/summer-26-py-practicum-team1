@@ -1,17 +1,23 @@
-import pytest
-
+import os
+from unittest import mock
 from unittest.mock import patch
+
+import pytest
 
 from pipeline.extract.openweather import (
   geocode_location,
   fetch_air_pollution_history,
 )
 
-def test_fetch_air_pollution_history_empty_response(monkeypatch):
-  monkeypatch.setenv(
-    "OPENWEATHER_API_KEY",
-    "test-key",
-  )
+@pytest.fixture(autouse=True)
+def set_test_key():
+  with mock.patch.dict(
+    os.environ,
+    {"OPENWEATHER_API_KEY": "test-key"},
+  ):
+    yield
+
+def test_fetch_air_pollution_history_empty_response():
 
   with patch(
     "pipeline.extract.openweather._get_json",
@@ -28,7 +34,7 @@ def test_fetch_air_pollution_history_empty_response(monkeypatch):
         end=1606485000,
       )
 
-def test_geocode_location_returns_coordinates(monkeypatch):
+def test_geocode_location_returns_coordinates():
   location = {
     "city": "Charlotte",
     "country_code": "US",
@@ -45,11 +51,6 @@ def test_geocode_location_returns_coordinates(monkeypatch):
     }
   ]
 
-  monkeypatch.setenv(
-    "OPENWEATHER_API_KEY",
-    "test-key",
-  )
-
   with patch(
     "pipeline.extract.openweather._get_json",
     return_value=fake_response,
@@ -61,17 +62,12 @@ def test_geocode_location_returns_coordinates(monkeypatch):
     "lon": -80.8431,
   }
 
-def test_geocode_location_not_found(monkeypatch):
+def test_geocode_location_not_found():
   location = {
     "city": "UnknownCity",
     "country_code": "US",
     "state": "",
   }
-
-  monkeypatch.setenv(
-    "OPENWEATHER_API_KEY",
-    "test-key",
-  )
 
   with patch(
     "pipeline.extract.openweather._get_json",
@@ -83,11 +79,7 @@ def test_geocode_location_not_found(monkeypatch):
 
 
 
-def test_fetch_air_pollution_history_returns_data(monkeypatch):
-  monkeypatch.setenv(
-    "OPENWEATHER_API_KEY",
-    "test-key",
-  )
+def test_fetch_air_pollution_history_returns_data():
 
   fake_response = {
     "coord": {
@@ -123,7 +115,7 @@ def test_fetch_air_pollution_history_returns_data(monkeypatch):
 
   assert result == fake_response
 
-def test_geocode_location_without_state(monkeypatch):
+def test_geocode_location_without_state():
   location = {
     "city": "London",
     "country_code": "GB",
@@ -135,8 +127,6 @@ def test_geocode_location_without_state(monkeypatch):
       "lon": -0.1278,
     }
   ]
-
-  monkeypatch.setenv("OPENWEATHER_API_KEY", "test-key")
 
   with patch(
     "pipeline.extract.openweather._get_json",
