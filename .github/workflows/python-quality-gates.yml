@@ -3,8 +3,8 @@ name: Python Quality Gates
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
-  branches:
-    - main
+    branches:
+      - main
 
 permissions:
   contents: read
