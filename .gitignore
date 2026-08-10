@@ -157,6 +157,10 @@ data/
 *.pid
 .tools/
 
+# PyCharm/IDEA
+.idea
+.python-version
 
+# macOS
 .DS_Store
 .history/
