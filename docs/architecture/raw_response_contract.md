@@ -1,7 +1,7 @@
 ## Raw Response Contract
 ### Request Context
 
-- **Source location:** `CITIES_CSV_FILE`; default: `services/pipeline/config/cities.csv`
+- **Source location:** City records are read  from `CITIES_CSV_FILE`; default: `services/pipeline/config/cities.csv`
 
 - **API:** OpenWeather
 
@@ -19,7 +19,7 @@
 `GET https://api.openweathermap.org/data/2.5/air_pollution/history`
 
 - **Historical window:** start=1606488670, end=1606747870 (UTC)
-- **Response retrieved at:**
+- **Response retrieved at:** Not included in the OpenWeather raw response.
 
 ### Raw OpenWeather Payload
 ```json
@@ -75,6 +75,13 @@
         "pm10": 0.8,
         "nh3": 0.08
       },
+      "dt": 1606496400
+    }
+  ]
+}
+```
+
+Sample shown with three observations from the requested historical window. The actual API response contains additional observations.
 
 
 ### Important Response Fields
