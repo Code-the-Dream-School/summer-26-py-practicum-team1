@@ -32,7 +32,8 @@ def _get_cities_csv_path() -> Path:
     return path
 
 def read_city_records(csv_path: Path | str | None = None) -> list[dict[str, str]]:
-
+    logger.debug("read_city_records called with csv_path=%r", csv_path)
+    
     path = Path(csv_path) if csv_path is not None else _get_cities_csv_path()
     logger.info('Reading cities CSV: %s', path)
 
