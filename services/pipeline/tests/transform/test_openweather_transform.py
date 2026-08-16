@@ -138,3 +138,16 @@ def test_transform_supports_multiple_observations(
     assert records[0]["observed_at"] != records[1]["observed_at"]
     assert records[1]["aqi"] == 2
     assert records[1]["pm2_5"] == pytest.approx(4.2)
+
+# empty test
+def test_transform_empty_response_returns_empty_list(location_context):
+    """An empty observation list returns an empty clean result."""
+    raw_response = {
+        "coord": {
+            "lon": -78.6382,
+            "lat": 35.7796,
+        },
+        "list": [],
+    }
+
+    assert transform_air_pollution(raw_response, location_context) == []
