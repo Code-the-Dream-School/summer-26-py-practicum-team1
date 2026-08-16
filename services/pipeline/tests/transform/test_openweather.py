@@ -91,6 +91,7 @@ def test_invalid_optional_pollutants_become_none_and_record_is_kept(caplog):
     components = COMPONENTS.copy()
     components.pop("pm2_5")
     components["no2"] = "not-a-number"
+    components["co"] = "ignored-value"
 
     with caplog.at_level(logging.WARNING, logger="pipeline.transform.openweather"):
         records = transform_air_pollution(
@@ -103,6 +104,7 @@ def test_invalid_optional_pollutants_become_none_and_record_is_kept(caplog):
     assert records[0]["no2"] is None
     assert "field=list[0].components.pm2_5 value=None" in caplog.text
     assert "field=list[0].components.no2 value='not-a-number'" in caplog.text
+    assert "components.co" not in caplog.text
 
 
 @pytest.mark.parametrize(

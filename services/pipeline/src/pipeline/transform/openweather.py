@@ -6,14 +6,10 @@ from datetime import datetime, timezone
 logger = logging.getLogger(__name__)
 
 POLLUTANT_FIELDS = (
-    "co",
-    "no",
-    "no2",
-    "o3",
-    "so2",
     "pm2_5",
     "pm10",
-    "nh3",
+    "no2",
+    "o3",
 )
 
 
@@ -167,10 +163,7 @@ def transform_air_pollution(raw_response, location):
             "longitude": longitude,
             "observed_at": observed_at,
             "aqi": aqi,
-            "pm2_5": normalized_components["pm2_5"],
-            "pm10": normalized_components["pm10"],
-            "no2": normalized_components["no2"],
-            "o3": normalized_components["o3"],
+            **normalized_components,
         })
 
     return records
