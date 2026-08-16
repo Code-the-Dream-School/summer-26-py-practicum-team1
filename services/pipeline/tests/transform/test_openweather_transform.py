@@ -315,4 +315,32 @@ def test_transform_rejects_malformed_required_fields(
     with pytest.raises((ValueError, TypeError)):
         transform_air_pollution(raw_response, location_context)
 
+# Duplicates test
+def test_transform_deduplicates_repeated_observations(location_context):
+    """Repeated location/timestamp observations appear only once."""
+    observation = {
+        "main": {"aqi": 2},
+        "components": {
+            "pm2_5": 7.5,
+            "pm10": 10.0,
+            "no2": 4.5,
+            "o3": 35.0,
+        },
+        "dt": 1606489200,
+    }
+
+    raw_response = {
+        "coord": {
+            "lon": -78.6382,
+            "lat": 35.7796,
+        },
+        "list": [
+            observation,
+            observation.copy(),
+        ],
+    }
+
+    records = transform_air_pollution(raw_response, location_context)
+
+    assert len(records) == 1
 
