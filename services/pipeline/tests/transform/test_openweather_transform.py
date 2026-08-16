@@ -344,3 +344,14 @@ def test_transform_deduplicates_repeated_observations(location_context):
 
     assert len(records) == 1
 
+# no state test
+def test_transform_location_without_optional_state(representative_raw_response):
+    """State is optional in the location context."""
+    location = {
+        "city": "Paris",
+        "country_code": "FR",
+    }
+
+    records = transform_air_pollution(representative_raw_response, location)
+
+    assert records[0]["location"] == "Paris, FR"
