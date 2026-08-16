@@ -1,17 +1,20 @@
+def _build_location_label(location):
+  parts = [
+      location["city"],
+      location["country_code"],
+      location.get("state"),
+  ]
+
+  return ", ".join(part for part in parts if part)
+
+
 def transform_air_pollution(raw_response, location):
   records = []
+  location_label = _build_location_label(location)
 
   for item in raw_response["list"]:
     record = {
-      "location": ", ".join(
-        part
-        for part in [
-          location["city"],
-          location["country_code"],
-          location.get("state"),
-        ]
-        if part
-      ),
+      "location": location_label,
       "latitude": raw_response["coord"]["lat"],
       "longitude": raw_response["coord"]["lon"],
       "observed_at": item["dt"],
