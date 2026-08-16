@@ -50,3 +50,63 @@ def representative_raw_response():
         ],
     }
 
+# main test
+def test_transform_representative_successful_response(
+    representative_raw_response,
+    location_context,
+):
+    """A representative response must match the agreed clean contract."""
+    records = transform_air_pollution(
+        representative_raw_response,
+        location_context,
+    )
+
+    assert isinstance(records, list)
+    assert len(records) == 1
+
+    record = records[0]
+
+    assert set(record) == {
+        "location",
+        "latitude",
+        "longitude",
+        "observed_at",
+        "aqi",
+        "pm2_5",
+        "pm10",
+        "no2",
+        "o3",
+    }
+
+    assert record["location"] == "Raleigh, US, NC"
+
+    # Numeric types are normalized for the clean dataset.
+    assert record["latitude"] == 50.0
+    assert record["longitude"] == 50.0
+    assert isinstance(record["latitude"], float)
+    assert isinstance(record["longitude"], float)
+
+    # Unix seconds are normalized to a timezone-aware UTC datetime.
+    assert record["observed_at"] == datetime(
+        2020,
+        11,
+        27,
+        15,
+        0,
+        tzinfo=timezone.utc,
+    )
+    assert record["observed_at"].tzinfo == timezone.utc
+
+    assert record["aqi"] == 1
+    assert isinstance(record["aqi"], int)
+
+    assert record["pm2_5"] == pytest.approx(0.90)
+    assert record["pm10"] == pytest.approx(0.93)
+    assert record["no2"] == pytest.approx(2.29)
+    assert record["o3"] == pytest.approx(46.49)
+
+    assert isinstance(record["pm2_5"], float)
+    assert isinstance(record["pm10"], float)
+    assert isinstance(record["no2"], float)
+    assert isinstance(record["o3"], float)
+
