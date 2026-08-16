@@ -21,17 +21,17 @@ A single OpenWeather response may therefore produce multiple normalized records,
 
 ## Normalization Rules
 
-| Source field | Output field | Required | Normalization rule | Missing value behavior |
-| --- | --- | :---: | --- | --- |
-| Request location (`city`, `country_code`, optional `state`) | `location` | Yes | Preserve the requested location as the normalized location identifier. Format: `city, country_code` or `city, country_code, state` when a state is present. | Missing or invalid required location fields prevent records from being created for the payload. |
-| `coord.lat` | `latitude` | Yes | Normalize to `float` and rename to `latitude`. | Invalid or missing values prevent records from being created. |
-| `coord.lon` | `longitude` | Yes | Normalize to `float` and rename to `longitude`. | Invalid or missing values prevent records from being created. |
-| `list[].dt` | `observed_at` | Yes | Convert the Unix timestamp to a timezone-aware UTC `datetime`. | Invalid observations are skipped. |
-| `list[].main.aqi` | `aqi` | Yes | Preserve the OpenWeather AQI category after validating that it is within the supported range (1–5). | Invalid observations are skipped. |
-| `list[].components.pm2_5` | `pm2_5` | No | Copy the pollutant concentration as `float`. | Missing or invalid values become `None`. |
-| `list[].components.pm10` | `pm10` | No | Copy the pollutant concentration as `float`. | Missing or invalid values become `None`. |
-| `list[].components.no2` | `no2` | No | Copy the pollutant concentration as `float`. | Missing or invalid values become `None`. |
-| `list[].components.o3` | `o3` | No | Copy the pollutant concentration as `float`. | Missing or invalid values become `None`. |
+| Source field | Output field | Data type | Required | Normalization rule | Missing and invalid value behavior |
+| --- | --- | --- | :---: | --- | --- |
+| Request location (`city`, `country_code`, optional `state`) | `location` | `str` | Yes | Preserve the requested location as the normalized location identifier. Format: `city, country_code` or `city, country_code, state` when a state is present. | Missing or invalid required location fields prevent records from being created for the payload. |
+| `coord.lat` | `latitude` | `float` | Yes | Normalize to `float` and rename to `latitude`. | Invalid or missing values prevent records from being created. |
+| `coord.lon` | `longitude` | `float` | Yes | Normalize to `float` and rename to `longitude`. | Invalid or missing values prevent records from being created. |
+| `list[].dt` | `observed_at` | timezone-aware UTC `datetime` | Yes | Convert the Unix timestamp to a timezone-aware UTC `datetime`. | Invalid observations are skipped. |
+| `list[].main.aqi` | `aqi` | `int` | Yes | Preserve the OpenWeather AQI category after validating that it is within the supported range (1–5). | Invalid observations are skipped. |
+| `list[].components.pm2_5` | `pm2_5` | `float` or `None` | No | Copy the pollutant concentration as `float`. | Missing or invalid values become `None`. |
+| `list[].components.pm10` | `pm10` | `float` or `None` | No | Copy the pollutant concentration as `float`. | Missing or invalid values become `None`. |
+| `list[].components.no2` | `no2` | `float` or `None` | No | Copy the pollutant concentration as `float`. | Missing or invalid values become `None`. |
+| `list[].components.o3` | `o3` | `float` or `None` | No | Copy the pollutant concentration as `float`. | Missing or invalid values become `None`. |
 
 ---
 
