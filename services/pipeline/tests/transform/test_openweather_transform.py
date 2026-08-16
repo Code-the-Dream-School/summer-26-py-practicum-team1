@@ -244,7 +244,7 @@ def test_transform_rejects_missing_required_fields(
     with pytest.raises((KeyError, ValueError, TypeError)):
         transform_air_pollution(raw_response, location_context)
 
-
+# Malformed required fields tests
 @pytest.mark.parametrize(
     "raw_response",
     [
