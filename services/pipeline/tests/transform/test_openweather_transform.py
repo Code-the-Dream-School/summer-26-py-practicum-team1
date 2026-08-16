@@ -110,3 +110,31 @@ def test_transform_representative_successful_response(
     assert isinstance(record["no2"], float)
     assert isinstance(record["o3"], float)
 
+# test for couple observations
+def test_transform_supports_multiple_observations(
+    representative_raw_response,
+    location_context,
+):
+    """One clean record is returned for each distinct observation."""
+    representative_raw_response["list"].append(
+        {
+            "main": {"aqi": 2},
+            "components": {
+                "pm2_5": 4.2,
+                "pm10": 5.1,
+                "no2": 3.3,
+                "o3": 40.0,
+            },
+            "dt": 1606492800,
+        }
+    )
+
+    records = transform_air_pollution(
+        representative_raw_response,
+        location_context,
+    )
+
+    assert len(records) == 2
+    assert records[0]["observed_at"] != records[1]["observed_at"]
+    assert records[1]["aqi"] == 2
+    assert records[1]["pm2_5"] == pytest.approx(4.2)
