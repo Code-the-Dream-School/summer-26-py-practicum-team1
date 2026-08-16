@@ -33,7 +33,7 @@ A raw response from the OpenWeather Historical Air Pollution API.
 }
 ``` 
 
-*Extraction context:* The transform receives the original city input from the extraction step: city and country code are required, while state is optional.
+*Location context:* The transform receives the original city input from the extraction step: city and country code are required, while state is optional.
 
 Example:
 
@@ -43,7 +43,7 @@ country_code: US
 
 state: NC
 
-If state is not provided, the transform can still processes the location.
+If state is not provided, the transform can still process the location.
 
 Example:
 
@@ -51,6 +51,11 @@ city: Paris
 country_code: FR
 state: None
 
+## Transform Contract
+
+Conceptually, the transform receives the raw OpenWeather payload and the location context and returns a list of clean records:
+
+transform(raw_payload, location_context) -> list[CleanRecord]
 
 ## 2. Output Record Granularity
 
@@ -66,7 +71,7 @@ Raleigh 12:00 -> record 3
 ## 3. Raw-to-Clean Field Mapping
 | Raw field | Clean field | Transformation | Required |
 |---|---|---|---| 
-| `city,country_code, optional state` | location | Combined into a location label | Yes |
+| `location_context.city, location_context.country_code, location_context.state` | location | Combined into a location label; state is omitted when not provided | Yes |
 | `coord.lat` | latitude | Copied from raw response | Yes |
 | `coord.lon` | longitude | Copied from raw response | Yes |
 | `list[].dt` | observed_at | Converted from Unix seconds to UTC datetime | Yes |
@@ -85,10 +90,10 @@ Based on the proposed transorm contract and the Sprint 2 sample payload, one cle
   "location": "Example City, US, NC",
   "latitude": 50,
   "longitude": 50,
-  "observed_at": "2020-11-27T07:40:00Z",
-  "aqi": 2, 
-  "pm2_5": 13.448,
-  "pm10": 15.524,
-  "no2": 43.184,
-  "o3": 4.783
+  "observed_at": "2020-11-27T07:00:00Z",
+  "aqi": 1, 
+  "pm2_5": 0.9,
+  "pm10": 0.93,
+  "no2": 2.29,
+  "o3": 46.49
 }
