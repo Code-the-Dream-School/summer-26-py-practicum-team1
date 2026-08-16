@@ -151,3 +151,168 @@ def test_transform_empty_response_returns_empty_list(location_context):
     }
 
     assert transform_air_pollution(raw_response, location_context) == []
+
+# missed field
+def test_transform_missing_optional_fields_are_none(location_context):
+    """Missing optional pollutant fields do not reject the observation."""
+    raw_response = {
+        "coord": {
+            "lon": -78.6382,
+            "lat": 35.7796,
+        },
+        "list": [
+            {
+                "main": {"aqi": 2},
+                "components": {
+                    "pm2_5": 7.5,
+                    # pm10, no2, and o3 intentionally omitted.
+                },
+                "dt": 1606489200,
+            }
+        ],
+    }
+
+    records = transform_air_pollution(raw_response, location_context)
+
+    assert len(records) == 1
+    assert records[0]["pm2_5"] == pytest.approx(7.5)
+    assert records[0]["pm10"] is None
+    assert records[0]["no2"] is None
+    assert records[0]["o3"] is None
+
+# Required fields tests
+@pytest.mark.parametrize(
+    "raw_response",
+    [
+        # Missing latitude.
+        {
+            "coord": {"lon": -78.6382},
+            "list": [
+                {
+                    "main": {"aqi": 2},
+                    "components": {},
+                    "dt": 1606489200,
+                }
+            ],
+        },
+        # Missing longitude.
+        {
+            "coord": {"lat": 35.7796},
+            "list": [
+                {
+                    "main": {"aqi": 2},
+                    "components": {},
+                    "dt": 1606489200,
+                }
+            ],
+        },
+        # Missing AQI.
+        {
+            "coord": {
+                "lon": -78.6382,
+                "lat": 35.7796,
+            },
+            "list": [
+                {
+                    "main": {},
+                    "components": {},
+                    "dt": 1606489200,
+                }
+            ],
+        },
+        # Missing timestamp.
+        {
+            "coord": {
+                "lon": -78.6382,
+                "lat": 35.7796,
+            },
+            "list": [
+                {
+                    "main": {"aqi": 2},
+                    "components": {},
+                }
+            ],
+        },
+    ],
+)
+
+def test_transform_rejects_missing_required_fields(
+    raw_response,
+    location_context,
+):
+    """Missing fields required by the clean contract are rejected."""
+    with pytest.raises((KeyError, ValueError, TypeError)):
+        transform_air_pollution(raw_response, location_context)
+
+
+@pytest.mark.parametrize(
+    "raw_response",
+    [
+        # Malformed latitude.
+        {
+            "coord": {
+                "lon": -78.6382,
+                "lat": "not-a-number",
+            },
+            "list": [
+                {
+                    "main": {"aqi": 2},
+                    "components": {},
+                    "dt": 1606489200,
+                }
+            ],
+        },
+        # Malformed longitude.
+        {
+            "coord": {
+                "lon": "not-a-number",
+                "lat": 35.7796,
+            },
+            "list": [
+                {
+                    "main": {"aqi": 2},
+                    "components": {},
+                    "dt": 1606489200,
+                }
+            ],
+        },
+        # Malformed AQI.
+        {
+            "coord": {
+                "lon": -78.6382,
+                "lat": 35.7796,
+            },
+            "list": [
+                {
+                    "main": {"aqi": "bad-aqi"},
+                    "components": {},
+                    "dt": 1606489200,
+                }
+            ],
+        },
+        # Malformed timestamp.
+        {
+            "coord": {
+                "lon": -78.6382,
+                "lat": 35.7796,
+            },
+            "list": [
+                {
+                    "main": {"aqi": 2},
+                    "components": {},
+                    "dt": "not-a-timestamp",
+                }
+            ],
+        },
+    ],
+)
+
+def test_transform_rejects_malformed_required_fields(
+    raw_response,
+    location_context,
+):
+    """Malformed required values must not silently enter clean data."""
+    with pytest.raises((ValueError, TypeError)):
+        transform_air_pollution(raw_response, location_context)
+
+
