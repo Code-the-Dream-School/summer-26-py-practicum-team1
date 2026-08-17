@@ -1,5 +1,5 @@
+from datetime import datetime, timezone
 import pytest
-
 from pipeline.transform.openweather import transform_air_pollution
 
 
@@ -38,7 +38,14 @@ def test_transform_returns_clean_record():
       "location": "Raleigh, US, NC",
       "latitude": 50,
       "longitude": 50,
-      "observed_at": 1606489200,
+      "observed_at": datetime(
+          2020,
+          11,
+          27,
+          15,
+          0,
+          tzinfo=timezone.utc,
+      ),
       "aqi": 1,
       "pm2_5": 0.9,
       "pm10": 0.93,
@@ -120,3 +127,45 @@ def test_transform_rejects_out_of_range_longitude():
     match="Longitude is out of range",
   ):
       transform_air_pollution(raw_response, location)
+
+def test_transform_multiple_observations():
+  raw_response = {
+    "coord": {
+        "lat": 50,
+        "lon": 50,
+    },
+    "list": [
+        {
+          "dt": 1606489200,
+          "main": {"aqi": 1},
+          "components": {
+            "pm2_5": 0.9,
+            "pm10": 0.93,
+            "no2": 2.29,
+            "o3": 46.49,
+          },
+        },
+        {
+          "dt": 1606492800,
+          "main": {"aqi": 2},
+          "components": {
+            "pm2_5": 1.2,
+            "pm10": 1.5,
+            "no2": 3.1,
+            "o3": 48.0,
+          },
+        },
+    ],
+  }
+
+  location = {
+    "city": "Raleigh",
+    "country_code": "US",
+    "state": "NC",
+  }
+
+  result = transform_air_pollution(raw_response, location)
+
+  assert len(result) == 2
+  assert result[0]["aqi"] == 1
+  assert result[1]["aqi"] == 2

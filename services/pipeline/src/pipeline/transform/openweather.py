@@ -1,3 +1,10 @@
+from pipeline.transform.openweather_normalization import (
+  normalize_aqi,
+  normalize_number,
+  normalize_timestamp,
+)
+
+
 def _build_location_label(location):
   parts = [
     location["city"],
@@ -12,7 +19,7 @@ def _validate_coordinates(raw_response):
   coord = raw_response.get("coord")
 
   if not isinstance(coord, dict):
-      raise ValueError("Missing or invalid coord object")
+    raise ValueError("Missing or invalid coord object")
 
   lat = coord.get("lat")
   lon = coord.get("lon")
@@ -41,16 +48,41 @@ def transform_air_pollution(raw_response, location):
   location_label = _build_location_label(location)
 
   for item in observations:
+    observed_at = normalize_timestamp(
+      item.get("dt"),
+      "dt",
+    )
+
+    aqi = normalize_aqi(
+      item.get("main", {}).get("aqi"),
+      "main.aqi",
+    )
+
+    if observed_at is None or aqi is None:
+      continue
+
     record = {
       "location": location_label,
       "latitude": latitude,
       "longitude": longitude,
-      "observed_at": item["dt"],
-      "aqi": item["main"]["aqi"],
-      "pm2_5": item["components"].get("pm2_5"),
-      "pm10": item["components"].get("pm10"),
-      "no2": item["components"].get("no2"),
-      "o3": item["components"].get("o3"),
+      "observed_at": observed_at,
+      "aqi": aqi,
+      "pm2_5": normalize_number(
+        item.get("components", {}).get("pm2_5"),
+        "components.pm2_5",
+      ),
+      "pm10": normalize_number(
+        item.get("components", {}).get("pm10"),
+        "components.pm10",
+      ),
+      "no2": normalize_number(
+        item.get("components", {}).get("no2"),
+        "components.no2",
+      ),
+      "o3": normalize_number(
+        item.get("components", {}).get("o3"),
+        "components.o3",
+      ),
     }
 
     records.append(record)
