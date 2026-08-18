@@ -10,13 +10,14 @@ This document specifies the planned runtime flow for the City Air Tracker pipeli
 flowchart TD
     A[Start] --> B[Read city list and settings]
     B --> C[Geocode the city]
-    C --> D[Get air pollution data from OpenWeather]
-    D --> E[Transform and validate the data]
-    E --> F[Create the gold dataset]
-    F --> G[store gold dataset in postgrsSQL]
-    G --> H[Backend API reads the data]
-    H --> I[React dashboard shows charts]
-    I --> J[End]
+    C --> D[Get raw OpenWeather payload + location context]
+    D --> E[Transform raw payload + location context]
+    E --> F[Clean records: 1 location + 1 timestamp per record]
+    F --> G[Create the gold dataset]
+    G --> H[store gold dataset in postgrsSQL]
+    H --> I[Backend API reads the data]
+    I --> J[React dashboard shows charts]
+    J --> K[End]
 ```
 
 ## Step 1 - Read Configuration
