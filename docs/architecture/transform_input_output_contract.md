@@ -69,6 +69,8 @@ Raleigh 12:00 -> record 3
 
 
 ## 3. Raw-to-Clean Field Mapping
+The transform only maps the fields explicitly defined in this contract. Additional fields returned by OpenWeather (for example, new fields added to components) are ignored unless they are added to the clean output contract in a future update.
+
 | Raw field | Clean field | Transformation | Required |
 |---|---|---|---| 
 | `location_context.city, location_context.country_code, location_context.state` | location | Combined into a location label; state is omitted when not provided | Yes |
