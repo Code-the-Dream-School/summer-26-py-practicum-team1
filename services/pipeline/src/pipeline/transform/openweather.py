@@ -45,6 +45,7 @@ def transform_air_pollution(raw_response, location):
   latitude, longitude = _validate_coordinates(raw_response)
 
   records = []
+  seen_timestamps = set()
   location_label = _build_location_label(location)
 
   for item in observations:
@@ -60,6 +61,11 @@ def transform_air_pollution(raw_response, location):
 
     if observed_at is None or aqi is None:
       continue
+
+    if observed_at in seen_timestamps:
+      continue
+
+    seen_timestamps.add(observed_at)
 
     record = {
       "location": location_label,
