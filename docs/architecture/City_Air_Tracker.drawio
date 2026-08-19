@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1585" dy="725" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -211,10 +211,10 @@
         <mxCell id="Q6jyvfG0DxycVXMOOycm-12" parent="WIyWlLk6GJQsqaUBKTNV-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="config&lt;div&gt;(params)&lt;/div&gt;" vertex="1">
           <mxGeometry height="30" width="60" x="154" y="352.5" as="geometry" />
         </mxCell>
-        <mxCell id="Q6jyvfG0DxycVXMOOycm-13" parent="WIyWlLk6GJQsqaUBKTNV-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="raw data&lt;div&gt;(JSON)&lt;/div&gt;" vertex="1">
+        <mxCell id="Q6jyvfG0DxycVXMOOycm-13" parent="WIyWlLk6GJQsqaUBKTNV-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Raw OpenWeather payload+location context" vertex="1">
           <mxGeometry height="30" width="60" x="370" y="220" as="geometry" />
         </mxCell>
-        <mxCell id="Q6jyvfG0DxycVXMOOycm-14" parent="WIyWlLk6GJQsqaUBKTNV-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="clean data&lt;div&gt;(records)&lt;/div&gt;" vertex="1">
+        <mxCell id="Q6jyvfG0DxycVXMOOycm-14" parent="WIyWlLk6GJQsqaUBKTNV-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Clean records: 1 location + 1 timestamp per record" vertex="1">
           <mxGeometry height="30" width="60" x="575" y="220" as="geometry" />
         </mxCell>
         <mxCell id="Q6jyvfG0DxycVXMOOycm-15" parent="WIyWlLk6GJQsqaUBKTNV-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="INSERT / UPDATE&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;(write)&lt;/div&gt;" vertex="1">
