@@ -17,6 +17,9 @@ Stores location information used for air quality observations.
 
 - Primary key: `id`
 - Unique: `city`, `country_code`, `latitude`, `longitude`
+- `country_code` must contain exactly 2 characters
+- `latitude` must be between -90 and 90
+- `longitude` must be between -180 and 180
 
 ## Air Quality Records
 
@@ -38,6 +41,7 @@ Stores transformed air quality observations for each location.
 - Primary key: `id`
 - Foreign key: `location_id` references `locations(id)`
 - Unique: `location_id`, `observed_at`
+- `aqi` must be between 1 and 5
 
 ## Pipeline Runs
 
@@ -55,6 +59,8 @@ Stores information about each pipeline execution.
 ### Constraints
 
 - Primary key: `id`
+- `status` must be one of: `running`, `success`, `failed`
+- `records_processed` must be greater than or equal to 0
 
 ## Relationships
 
@@ -70,3 +76,9 @@ Stores information about each pipeline execution.
 - Raw responses can be logged when needed for debugging.
 - Transformed air quality records are persisted in PostgreSQL.
 - One air quality record is allowed per location and observation timestamp.
+
+## PostgreSQL Notes
+
+- `TIMESTAMPTZ` is used for timestamps so stored times are timezone-aware.
+- `DOUBLE PRECISION` is used for coordinates and pollutant measurements.
+- `state` and pollutant fields are nullable because they may be missing.
