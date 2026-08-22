@@ -47,14 +47,14 @@ Stores transformed air quality observations for each location.
 
 Stores information about each pipeline execution.
 
-| Column            | Type        | Required | Description                                |
-| ----------------- | ----------- | -------- | ------------------------------------------ |
-| id                | BIGSERIAL   | Yes      | Primary key                                |
-| started_at        | TIMESTAMPTZ | Yes      | Time when the pipeline run started         |
-| finished_at       | TIMESTAMPTZ | No       | Time when the pipeline run finished        |
-| status            | TEXT        | Yes      | Current status of the pipeline run         |
-| records_processed | INTEGER     | Yes      | Number of records processed during the run |
-| error_message     | TEXT        | No       | Error details if the pipeline run failed   |
+| Column            | Type        | Required | Description                                             |
+| ----------------- | ----------- | -------- | ------------------------------------------------------- |
+| id                | BIGSERIAL   | Yes      | Primary key                                             |
+| started_at        | TIMESTAMPTZ | Yes      | Time when the pipeline run started                      |
+| finished_at       | TIMESTAMPTZ | No       | Time when the pipeline run finished                     |
+| status            | TEXT        | Yes      | Current status of the pipeline run                      |
+| records_processed | INTEGER     | Yes      | Number of records processed during the run, default `0` |
+| error_message     | TEXT        | No       | Error details if the pipeline run failed                |
 
 ### Constraints
 
