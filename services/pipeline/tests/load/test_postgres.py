@@ -1,6 +1,11 @@
 from datetime import datetime, timezone
+from unittest.mock import Mock
 
-from pipeline.load.postgres import prepare_air_quality_values
+from pipeline.load.postgres import (
+    INSERT_AIR_QUALITY_RECORDS,
+    prepare_air_quality_values,
+    save_transformed_records,
+)
 
 
 def test_prepare_air_quality_values_selects_database_record_fields():
@@ -49,3 +54,72 @@ def test_prepare_air_quality_values_maps_missing_optional_pollutants_to_none():
         "no2": None,
         "o3": None,
     }
+
+
+def test_save_transformed_records_inserts_one_observation():
+    connection = Mock()
+    observed_at = datetime(2020, 11, 27, 13, 0, tzinfo=timezone.utc)
+    record = {
+        "location": "Charlotte, US, NC",
+        "latitude": 35.2271,
+        "longitude": -80.8431,
+        "observed_at": observed_at,
+        "aqi": 2,
+    }
+
+    save_transformed_records(connection, location_id=42, records=[record])
+
+    connection.execute.assert_called_once_with(INSERT_AIR_QUALITY_RECORDS, [{
+        "location_id": 42,
+        "observed_at": observed_at,
+        "aqi": 2,
+        "pm2_5": None,
+        "pm10": None,
+        "no2": None,
+        "o3": None,
+    }])
+
+
+def test_save_transformed_records_inserts_multiple_observations():
+    connection = Mock()
+    first_observed_at = datetime(2020, 11, 27, 13, 0, tzinfo=timezone.utc)
+    second_observed_at = datetime(2020, 11, 27, 14, 0, tzinfo=timezone.utc)
+    records = [
+        {
+            "observed_at": first_observed_at,
+            "aqi": 2,
+            "pm2_5": 13.448,
+            "pm10": 15.524,
+            "no2": 43.184,
+            "o3": 4.783,
+        },
+        {
+            "observed_at": second_observed_at,
+            "aqi": 3,
+            "pm2_5": 18.2,
+            "pm10": 21.1,
+            "no2": 37.5,
+            "o3": 8.4,
+        },
+    ]
+
+    save_transformed_records(connection, location_id=42, records=records)
+
+    connection.execute.assert_called_once_with(INSERT_AIR_QUALITY_RECORDS, [
+        {
+            "location_id": 42,
+            **prepare_air_quality_values(records[0]),
+        },
+        {
+            "location_id": 42,
+            **prepare_air_quality_values(records[1]),
+        },
+    ])
+
+
+def test_save_transformed_records_does_not_execute_for_empty_records():
+    connection = Mock()
+
+    save_transformed_records(connection, location_id=42, records=[])
+
+    connection.execute.assert_not_called()
