@@ -1,6 +1,9 @@
 from datetime import datetime, timezone
 from unittest.mock import Mock
 
+import pytest
+from sqlalchemy.exc import SQLAlchemyError
+
 from pipeline.load.postgres import (
     INSERT_AIR_QUALITY_RECORDS,
     prepare_air_quality_values,
@@ -123,3 +126,15 @@ def test_save_transformed_records_does_not_execute_for_empty_records():
     save_transformed_records(connection, location_id=42, records=[])
 
     connection.execute.assert_not_called()
+
+
+def test_save_transformed_records_propagates_database_error():
+    connection = Mock()
+    connection.execute.side_effect = SQLAlchemyError("database write failed")
+    record = {
+        "observed_at": datetime(2020, 11, 27, 13, 0, tzinfo=timezone.utc),
+        "aqi": 2,
+    }
+
+    with pytest.raises(SQLAlchemyError, match="database write failed"):
+        save_transformed_records(connection, location_id=42, records=[record])
