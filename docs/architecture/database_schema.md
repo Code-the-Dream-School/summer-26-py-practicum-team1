@@ -72,6 +72,7 @@ Stores information about each pipeline execution.
 ## Design Decisions
 
 - PostgreSQL is the target database for Sprint 4.
+- PostgreSQL will run locally in Docker for Sprint 4.
 - Raw OpenWeather API responses are not stored in the database for the MVP.
 - Raw responses can be logged when needed for debugging.
 - Transformed air quality records are persisted in PostgreSQL.
