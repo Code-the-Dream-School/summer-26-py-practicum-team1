@@ -4,7 +4,7 @@ from datetime import datetime
 class Base(DeclarativeBase):
     pass
 
-from sqlalchemy import CheckConstraint, String, BigInteger, Float
+from sqlalchemy import CheckConstraint, String, BigInteger, Float, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 class Location(Base):
@@ -18,13 +18,14 @@ class Location(Base):
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
 
     __table_args__ = (
+        UniqueConstraint("city", "country_code", "latitude", "longitude"),
         CheckConstraint("length(country_code) = 2"),
         CheckConstraint("latitude >= -90 AND latitude <= 90"),
         CheckConstraint("longitude >= -180 AND longitude <= 180"),
     ) 
 
 
-from sqlalchemy import DateTime, ForeignKey, SmallInteger, UniqueConstraint, Integer
+from sqlalchemy import DateTime, ForeignKey, SmallInteger, UniqueConstraint, Integer, text
 
 class AirQualityRecord(Base):
     __tablename__ = "air_quality_records"
@@ -51,7 +52,7 @@ class PipelineRun(Base):
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     status: Mapped[str] = mapped_column(String, nullable=False)
-    records_processed: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    records_processed: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
     error_message: Mapped[str | None] = mapped_column(String, nullable=True)
 
     __table_args__ = (
