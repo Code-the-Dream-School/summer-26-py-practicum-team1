@@ -56,6 +56,17 @@ Stores information about each pipeline execution.
 | records_processed | INTEGER     | Yes      | Number of records processed during the run, default `0` |
 | error_message     | TEXT        | No       | Error details if the pipeline run failed                |
 
+## Raw API Responses
+
+Stores the original OpenWeather API response before transformation.
+
+| Column      | Type        | Required | Description                            |
+| ----------- | ----------- | -------- | -------------------------------------- |
+| id          | BIGSERIAL   | Yes      | Primary key                            |
+| location_id | BIGINT      | Yes      | References the location                |
+| fetched_at  | TIMESTAMPTZ | Yes      | Time when the API response was fetched |
+| payload     | JSONB       | Yes      | Original OpenWeather API response      |
+
 ### Constraints
 
 - Primary key: `id`
