@@ -33,3 +33,22 @@ UPDATE_PIPELINE_RUN = text("""
     WHERE id = :run_id
 """)
 
+# start pipeline run 
+def start_pipeline_run(
+    connection: Connection,
+    started_at: datetime | None = None,
+) -> int:
+    """Create a new pipeline run and return its database id."""
+
+    if started_at is None:
+        started_at = datetime.now(timezone.utc)
+
+    result = connection.execute(
+        INSERT_PIPELINE_RUN,
+        {
+            "started_at": started_at,
+        },
+    )
+
+    return result.scalar_one()
+
