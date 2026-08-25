@@ -6,7 +6,9 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from pipeline.load.postgres import (
     INSERT_AIR_QUALITY_RECORDS,
+    INSERT_RAW_API_RESPONSE,
     prepare_air_quality_values,
+    save_raw_response,
     save_transformed_records,
 )
 
@@ -138,3 +140,37 @@ def test_save_transformed_records_propagates_database_error():
 
     with pytest.raises(SQLAlchemyError, match="database write failed"):
         save_transformed_records(connection, location_id=42, records=[record])
+
+
+def test_save_raw_response_inserts_complete_payload():
+    connection = Mock()
+    fetched_at = datetime(2020, 11, 27, 15, 0, tzinfo=timezone.utc)
+    payload = {
+        "coord": {"lat": 35.2271, "lon": -80.8431},
+        "list": [{
+            "dt": 1606489200,
+            "main": {"aqi": 2},
+            "components": {"pm2_5": 13.448, "pm10": 15.524},
+        }],
+    }
+
+    save_raw_response(connection, location_id=42, fetched_at=fetched_at, payload=payload)
+
+    connection.execute.assert_called_once_with(INSERT_RAW_API_RESPONSE, {
+        "location_id": 42,
+        "fetched_at": fetched_at,
+        "payload": payload,
+    })
+
+
+def test_save_raw_response_propagates_database_error():
+    connection = Mock()
+    connection.execute.side_effect = SQLAlchemyError("database write failed")
+
+    with pytest.raises(SQLAlchemyError, match="database write failed"):
+        save_raw_response(
+            connection,
+            location_id=42,
+            fetched_at=datetime(2020, 11, 27, 15, 0, tzinfo=timezone.utc),
+            payload={"coord": {"lat": 35.2271, "lon": -80.8431}, "list": []},
+        )
