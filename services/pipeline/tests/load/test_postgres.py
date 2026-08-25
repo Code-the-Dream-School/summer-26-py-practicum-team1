@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from unittest.mock import Mock
 
 import pytest
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.exc import SQLAlchemyError
 
 from pipeline.load.postgres import (
@@ -59,6 +60,27 @@ def test_prepare_air_quality_values_maps_missing_optional_pollutants_to_none():
         "no2": None,
         "o3": None,
     }
+
+
+def test_air_quality_upsert_uses_record_key_and_updates_measurements():
+    statement = str(
+        INSERT_AIR_QUALITY_RECORDS.compile(dialect=postgresql.dialect())
+    )
+    normalized_statement = " ".join(statement.split())
+
+    assert "ON CONFLICT (location_id, observed_at) DO UPDATE" in normalized_statement
+    update_clause = normalized_statement.split("DO UPDATE SET ", 1)[1]
+    expected_assignments = (
+        "aqi = excluded.aqi",
+        "pm2_5 = excluded.pm2_5",
+        "pm10 = excluded.pm10",
+        "no2 = excluded.no2",
+        "o3 = excluded.o3",
+    )
+    for assignment in expected_assignments:
+        assert assignment in update_clause
+    assert "location_id =" not in update_clause
+    assert "observed_at =" not in update_clause
 
 
 def test_save_transformed_records_inserts_one_observation():
