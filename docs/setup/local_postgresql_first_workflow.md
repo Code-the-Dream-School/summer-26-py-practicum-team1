@@ -30,7 +30,7 @@ source ./venv/Scripts/activate
 ## 3. Configure the database connection
 Create a local .env file in the project root:
 
-DATABASE_URL=postgresql://postgres:postgres@localhost:5433/air_tracker
+DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5433/air_tracker
 
 This connects the application and Alembic to the PostgreSQL database running in Docker.
 
