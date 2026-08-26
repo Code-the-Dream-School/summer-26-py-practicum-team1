@@ -85,3 +85,21 @@ def _apply_migrations(database_url: str) -> None:
         else:
             os.environ["DATABASE_URL"] = previous_database_url
 
+# test database
+@pytest.fixture(scope="session")
+def test_engine():
+    database_url = os.getenv(
+        "TEST_DATABASE_URL",
+        DEFAULT_TEST_DATABASE_URL,
+    )
+
+    _ensure_test_database(database_url)
+    _reset_test_schema(database_url)
+    _apply_migrations(database_url)
+
+    engine = create_engine(database_url)
+
+    try:
+        yield engine
+    finally:
+        engine.dispose()
