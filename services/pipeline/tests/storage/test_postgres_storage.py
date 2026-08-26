@@ -87,3 +87,28 @@ def test_writes_new_raw_response_and_transformed_record(db_connection, location_
     assert transformed_row["pm2_5"] == pytest.approx(13.5)
     assert transformed_row["pm10"] == pytest.approx(15.5)
 
+# test without duplicate
+def test_rerun_same_input_does_not_create_duplicate(db_connection, location_id, ):
+    record = {
+        "observed_at": OBSERVED_AT,
+        "aqi": 2,
+        "pm2_5": 10.0,
+        "pm10": 12.0,
+        "no2": 20.0,
+        "o3": 30.0,
+    }
+
+    save_transformed_records(db_connection, location_id, [record], )
+
+    save_transformed_records(db_connection, location_id, [record], )
+
+    row_count = db_connection.execute(
+        select(func.count())
+        .select_from(AirQualityRecord)
+        .where(
+            AirQualityRecord.location_id == location_id,
+            AirQualityRecord.observed_at == OBSERVED_AT,
+        )
+    ).scalar_one()
+
+    assert row_count == 1
