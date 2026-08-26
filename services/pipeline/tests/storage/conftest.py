@@ -84,8 +84,15 @@ def _apply_migrations(database_url: str) -> None:
     os.environ["DATABASE_URL"] = database_url
 
     try:
-        config = Config(str(REPO_ROOT / "alembic.ini"))
-        config.config_file_name = None
+        config = Config()
+        config.set_main_option(
+            "script_location",
+            str(REPO_ROOT / "alembic"),
+        )
+        config.set_main_option(
+            "sqlalchemy.url",
+            database_url,
+        )
         command.upgrade(config, "head")
     finally:
         if previous_database_url is None:
