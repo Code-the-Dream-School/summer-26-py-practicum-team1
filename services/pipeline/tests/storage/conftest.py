@@ -85,6 +85,7 @@ def _apply_migrations(database_url: str) -> None:
 
     try:
         config = Config(str(REPO_ROOT / "alembic.ini"))
+        config.config_file_name = None
         command.upgrade(config, "head")
     finally:
         if previous_database_url is None:
