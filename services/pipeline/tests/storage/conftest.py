@@ -116,3 +116,19 @@ def db_connection(test_engine):
         transaction.rollback()
         connection.close()
 
+# test location id
+@pytest.fixture
+def location_id(db_connection):
+    statement = (
+        insert(Location)
+        .values(
+            city="Charlotte",
+            country_code="US",
+            state="NC",
+            latitude=35.2271,
+            longitude=-80.8431,
+        )
+        .returning(Location.id)
+    )
+
+    return db_connection.execute(statement).scalar_one()
