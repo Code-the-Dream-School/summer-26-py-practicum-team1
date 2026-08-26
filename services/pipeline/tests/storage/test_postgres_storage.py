@@ -153,3 +153,20 @@ def test_upsert_updates_existing_record_values(db_connection, location_id, ):
     assert row["pm10"] == pytest.approx(31.0)
     assert row["no2"] == pytest.approx(40.0)
     assert row["o3"] == pytest.approx(50.0)
+
+# test empty input
+def test_empty_transformed_input_writes_nothing(
+    db_connection,
+    location_id,
+):
+    save_transformed_records(
+        db_connection,
+        location_id,
+        [],
+    )
+
+    row_count = db_connection.execute(
+        select(func.count()).select_from(AirQualityRecord)
+    ).scalar_one()
+
+    assert row_count == 0
