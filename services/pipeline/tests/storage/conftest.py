@@ -55,3 +55,19 @@ def _ensure_test_database(database_url: str) -> None:
     finally:
         admin_engine.dispose()
 
+# empty database
+def _reset_test_schema(database_url: str) -> None:
+    engine = create_engine(
+        database_url,
+        isolation_level="AUTOCOMMIT",
+    )
+
+    try:
+        with engine.connect() as connection:
+            connection.exec_driver_sql(
+                "DROP SCHEMA IF EXISTS public CASCADE"
+            )
+            connection.exec_driver_sql("CREATE SCHEMA public")
+    finally:
+        engine.dispose()
+
