@@ -1,5 +1,12 @@
 """SCRUM-36 Storage tests and verification
 
+- Checking path for alembic
+- Checking database air_tracker_test
+- Checking empty database
+- Checking alembic migration
+- Test database
+- Test conection
+- Test location id
 """
 
 import os
