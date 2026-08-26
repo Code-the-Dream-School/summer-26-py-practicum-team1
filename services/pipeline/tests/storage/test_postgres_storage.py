@@ -112,3 +112,44 @@ def test_rerun_same_input_does_not_create_duplicate(db_connection, location_id, 
     ).scalar_one()
 
     assert row_count == 1
+
+# test for updating an existing value
+def test_upsert_updates_existing_record_values(db_connection, location_id, ):
+    original_record = {
+        "observed_at": OBSERVED_AT,
+        "aqi": 2,
+        "pm2_5": 10.0,
+        "pm10": 12.0,
+        "no2": 20.0,
+        "o3": 30.0,
+    }
+
+    updated_record = {
+        "observed_at": OBSERVED_AT,
+        "aqi": 4,
+        "pm2_5": 25.5,
+        "pm10": 31.0,
+        "no2": 40.0,
+        "o3": 50.0,
+    }
+
+    save_transformed_records(db_connection, location_id, [original_record], )
+
+    save_transformed_records(db_connection, location_id, [updated_record], )
+
+    rows = db_connection.execute(
+        select(AirQualityRecord.__table__).where(
+            AirQualityRecord.location_id == location_id,
+            AirQualityRecord.observed_at == OBSERVED_AT,
+        )
+    ).mappings().all()
+
+    assert len(rows) == 1
+
+    row = rows[0]
+
+    assert row["aqi"] == 4
+    assert row["pm2_5"] == pytest.approx(25.5)
+    assert row["pm10"] == pytest.approx(31.0)
+    assert row["no2"] == pytest.approx(40.0)
+    assert row["o3"] == pytest.approx(50.0)
