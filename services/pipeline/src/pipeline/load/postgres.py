@@ -1,30 +1,23 @@
 from datetime import datetime
 
-from sqlalchemy import insert, text
+from sqlalchemy import insert
+from sqlalchemy.dialects.postgresql import insert as postgresql_insert
 from sqlalchemy.engine import Connection
 
-from services.database.models import RawApiResponse
+from services.database.models import AirQualityRecord, RawApiResponse
 
 
-INSERT_AIR_QUALITY_RECORDS = text("""
-    INSERT INTO air_quality_records (
-        location_id,
-        observed_at,
-        aqi,
-        pm2_5,
-        pm10,
-        no2,
-        o3
-    ) VALUES (
-        :location_id,
-        :observed_at,
-        :aqi,
-        :pm2_5,
-        :pm10,
-        :no2,
-        :o3
-    )
-""")
+_air_quality_insert = postgresql_insert(AirQualityRecord)
+INSERT_AIR_QUALITY_RECORDS = _air_quality_insert.on_conflict_do_update(
+    index_elements=["location_id", "observed_at"],
+    set_={
+        "aqi": _air_quality_insert.excluded.aqi,
+        "pm2_5": _air_quality_insert.excluded.pm2_5,
+        "pm10": _air_quality_insert.excluded.pm10,
+        "no2": _air_quality_insert.excluded.no2,
+        "o3": _air_quality_insert.excluded.o3,
+    },
+)
 
 INSERT_RAW_API_RESPONSE = insert(RawApiResponse)
 
