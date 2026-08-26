@@ -103,3 +103,16 @@ def test_engine():
         yield engine
     finally:
         engine.dispose()
+
+# tests conection
+@pytest.fixture
+def db_connection(test_engine):
+    connection = test_engine.connect()
+    transaction = connection.begin()
+
+    try:
+        yield connection
+    finally:
+        transaction.rollback()
+        connection.close()
+
