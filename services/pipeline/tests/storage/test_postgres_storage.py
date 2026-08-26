@@ -1,6 +1,10 @@
 """SCRUM-36 Storage tests and verification
 
 - Checking empty database
+- Test new raw response
+- Test without duplicate
+- Test for updating an existing value
+- Test empty input
 """
 
 from datetime import datetime, timezone
@@ -33,7 +37,7 @@ def test_migration_builds_schema_from_empty_database(test_engine):
         "pipeline_runs",
     }.issubset(tables)
 
-# test new raw response
+# Test new raw response
 def test_writes_new_raw_response_and_transformed_record(db_connection, location_id, ):
     fetched_at = datetime(2020, 11, 27, 15, 0, tzinfo=timezone.utc, )
 
@@ -87,7 +91,7 @@ def test_writes_new_raw_response_and_transformed_record(db_connection, location_
     assert transformed_row["pm2_5"] == pytest.approx(13.5)
     assert transformed_row["pm10"] == pytest.approx(15.5)
 
-# test without duplicate
+# Test without duplicate
 def test_rerun_same_input_does_not_create_duplicate(db_connection, location_id, ):
     record = {
         "observed_at": OBSERVED_AT,
@@ -113,7 +117,7 @@ def test_rerun_same_input_does_not_create_duplicate(db_connection, location_id, 
 
     assert row_count == 1
 
-# test for updating an existing value
+# Test for updating an existing value
 def test_upsert_updates_existing_record_values(db_connection, location_id, ):
     original_record = {
         "observed_at": OBSERVED_AT,
@@ -154,7 +158,7 @@ def test_upsert_updates_existing_record_values(db_connection, location_id, ):
     assert row["no2"] == pytest.approx(40.0)
     assert row["o3"] == pytest.approx(50.0)
 
-# test empty input
+# Test empty input
 def test_empty_transformed_input_writes_nothing(
     db_connection,
     location_id,
