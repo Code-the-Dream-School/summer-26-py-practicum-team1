@@ -71,3 +71,17 @@ def _reset_test_schema(database_url: str) -> None:
     finally:
         engine.dispose()
 
+# Alembic migrations
+def _apply_migrations(database_url: str) -> None:
+    previous_database_url = os.environ.get("DATABASE_URL")
+    os.environ["DATABASE_URL"] = database_url
+
+    try:
+        config = Config(str(REPO_ROOT / "alembic.ini"))
+        command.upgrade(config, "head")
+    finally:
+        if previous_database_url is None:
+            os.environ.pop("DATABASE_URL", None)
+        else:
+            os.environ["DATABASE_URL"] = previous_database_url
+
