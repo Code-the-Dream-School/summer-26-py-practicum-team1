@@ -76,7 +76,7 @@ def finish_pipeline_run(
     if finished_at is None:
         finished_at = datetime.now(timezone.utc)
 
-    connection.execute(
+    result = connection.execute(
         UPDATE_PIPELINE_RUN,
         {
             "run_id": run_id,
@@ -86,4 +86,9 @@ def finish_pipeline_run(
             "error_message": error_message,
         },
     )
+
+    if result.rowcount == 0:
+        raise ValueError(
+            f"Pipeline run {run_id} was not found"
+        )
 
