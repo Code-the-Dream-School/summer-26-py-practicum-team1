@@ -29,41 +29,42 @@ def run_pipeline(
 
     for location in locations:
         try:
-            coords = geocode_location(location)
+            with connection.begin_nested():
+                coords = geocode_location(location)
 
-            raw_response = fetch_air_pollution_history(
-                coords["lat"],
-                coords["lon"],
-                start,
-                end,
-            )
+                raw_response = fetch_air_pollution_history(
+                    coords["lat"],
+                    coords["lon"],
+                    start,
+                    end,
+                )
 
-            location_id = resolve_location_id(
-                connection,
-                location,
-                coords["lat"],
-                coords["lon"],
-            )
+                location_id = resolve_location_id(
+                    connection,
+                    location,
+                    coords["lat"],
+                    coords["lon"],
+                )
 
-            save_raw_response(
-                connection,
-                location_id,
-                datetime.now(timezone.utc),
-                raw_response,
-            )
+                save_raw_response(
+                    connection,
+                    location_id,
+                    datetime.now(timezone.utc),
+                    raw_response,
+                )
 
-            records = transform_air_pollution(
-                raw_response,
-                location,
-            )
+                records = transform_air_pollution(
+                    raw_response,
+                    location,
+                )
 
-            save_transformed_records(
-                connection,
-                location_id,
-                records,
-            )
+                save_transformed_records(
+                    connection,
+                    location_id,
+                    records,
+                )
 
-            records_processed += len(records)
+                records_processed += len(records)
 
         except Exception as exc:
             city = location.get("city", "unknown")
