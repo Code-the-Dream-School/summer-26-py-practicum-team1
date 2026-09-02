@@ -40,16 +40,12 @@ Start a local Prefect server in one terminal:
 .venv/bin/prefect server start
 ```
 
-In another terminal, configure the Prefect API URL:
+In another terminal, start the scheduler from the repository root with the Prefect API URL configured for that command:
 
 ```bash
-export PREFECT_API_URL=http://127.0.0.1:4200/api
-```
-
-Then start the scheduler from the repository root:
-
-```bash
-PYTHONPATH=services/pipeline/src .venv/bin/python -m pipeline.scheduler
+PREFECT_API_URL=http://127.0.0.1:4200/api \
+PYTHONPATH=services/pipeline/src \
+.venv/bin/python -m pipeline.scheduler
 ```
 
 The scheduler serves the `city-air-tracker-scheduled-pipeline` deployment and keeps the process available for runs scheduled by `PIPELINE_SCHEDULE_CRON`.

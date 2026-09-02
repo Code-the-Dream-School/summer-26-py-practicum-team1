@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timezone
 from unittest.mock import MagicMock, Mock, patch
 
@@ -21,10 +22,13 @@ def test_historical_window_returns_configured_utc_unix_range():
     assert end - start == 24 * 60 * 60
 
 
-def test_history_hours_returns_positive_integer(monkeypatch):
-    monkeypatch.setenv("PIPELINE_HISTORY_HOURS", "24")
-
-    assert scheduler._history_hours() == 24
+def test_history_hours_returns_positive_integer():
+    with patch.dict(
+        os.environ,
+        {"PIPELINE_HISTORY_HOURS": "24"},
+        clear=True,
+    ):
+        assert scheduler._history_hours() == 24
 
 
 @pytest.mark.parametrize(
