@@ -36,6 +36,38 @@ The CLI reads the configuration and passes the required values to the pipeline r
 
 Example:
 ```bash
+PYTHONPATH=services/pipeline/src python -m pipeline.cli --start "2026-08-20 00:00" --end "2026-08-23 00:00"
 ```
 
 ## Scheduled runs
+
+The City Air Tracker scheduler uses Prefect to run shared pipeline on a cron schedule.
+
+Required environment variables:
+
+- DATABASE_URL - PostgreSQL connection.
+- OPENWEATHER_API_KEY - OpenWeather API key.
+- PIPELINE_SCHEDULE_CRON - schedule for the pipeline
+- PIPELINE_HISTORY_HOURS - historical data window
+
+The optional CITIES_CSV_FILE variable can be used to specify the path to the city input CSV file. If it is not set, the scheduler uses: 
+```text
+services/pipeline/config/cities.csv
+```
+
+For local scheduled runs, configure these variables in the local `.env` file . API keys and database credentials must not be committed to the repository.
+
+Run locally:
+
+Start Prefect:
+```bash
+.venv/bin/prefect server start
+```
+
+Then start the scheduler:
+
+```bash
+PREFECT_API_URL=http://127.0.0.1:4200/api \
+PYTHONPATH=services/pipeline/src \
+.venv/bin/python -m pipeline.scheduler
+```
