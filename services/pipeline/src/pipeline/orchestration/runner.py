@@ -18,6 +18,11 @@ from pipeline.run_tracking import (
 )
 from pipeline.transform.openweather import transform_air_pollution
 
+from pipeline.export.parquet import (
+    export_transformed_records,
+    get_parquet_export_dir,
+)
+
 logger = logging.getLogger(__name__)
 
 
