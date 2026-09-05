@@ -9,3 +9,32 @@ import pandas as pd
 
 
 logger = logging.getLogger(__name__)
+
+def export_transformed_records(
+    records: list[dict],
+    output_path: Path | str,
+) -> Path | None:
+    """Export transformed air-quality records to a Parquet file."""
+
+    if not records:
+        logger.info("Parquet export skipped: no transformed records")
+        return None
+
+    path = Path(output_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    dataframe = pd.DataFrame(records)
+    dataframe.to_parquet(
+        path,
+        index=False,
+        engine="pyarrow",
+    )
+
+    logger.info(
+        "Parquet export completed: path=%s records=%d",
+        path,
+        len(records),
+    )
+
+    return path
+
