@@ -19,6 +19,17 @@ def get_parquet_export_dir() -> Path:
     raw = os.getenv("PARQUET_EXPORT_DIR")
     return Path(raw) if raw else DEFAULT_PARQUET_EXPORT_DIR
 
+def build_parquet_path(
+    city: str,
+    run_id: int,
+) -> Path:
+    safe_city = city.strip().lower().replace(" ", "_")
+
+    return (
+        get_parquet_export_dir()
+        / f"{safe_city}_run_{run_id}.parquet"
+    )
+
 def export_transformed_records(
     records: list[dict],
     output_path: Path | str,
