@@ -4,11 +4,20 @@
 
 import logging
 from pathlib import Path
+import os
 
 import pandas as pd
 
 
 logger = logging.getLogger(__name__)
+
+
+DEFAULT_PARQUET_EXPORT_DIR = Path("data/exports")
+
+
+def get_parquet_export_dir() -> Path:
+    raw = os.getenv("PARQUET_EXPORT_DIR")
+    return Path(raw) if raw else DEFAULT_PARQUET_EXPORT_DIR
 
 def export_transformed_records(
     records: list[dict],
