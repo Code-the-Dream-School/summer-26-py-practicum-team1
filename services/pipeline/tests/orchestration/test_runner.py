@@ -3,6 +3,8 @@ from unittest.mock import MagicMock, call, patch
 from pipeline.orchestration.runner import run_pipeline
 
 
+@patch("pipeline.orchestration.runner.export_transformed_records")
+@patch("pipeline.orchestration.runner.build_parquet_path")
 @patch("pipeline.orchestration.runner.finish_pipeline_run")
 @patch("pipeline.orchestration.runner.start_pipeline_run")
 @patch("pipeline.orchestration.runner.save_transformed_records")
@@ -20,6 +22,8 @@ def test_run_pipeline_success(
     mock_save_records,
     mock_start_run,
     mock_finish_run,
+    mock_build_parquet_path,
+    mock_export_records,
 ):
     connection = MagicMock()
 
@@ -47,6 +51,10 @@ def test_run_pipeline_success(
     ]
     mock_transform.return_value = records
     mock_resolve_location.return_value = 10
+
+    mock_build_parquet_path.return_value = (
+        "data/exports/new_york_run_1.parquet"
+    )
 
     stage_calls = MagicMock()
 
@@ -113,6 +121,16 @@ def test_run_pipeline_success(
         records,
     )
 
+    mock_build_parquet_path.assert_called_once_with(
+        "New York",
+        1,
+    )   
+
+    mock_export_records.assert_called_once_with(
+        records,
+        "data/exports/new_york_run_1.parquet",
+    )
+
     mock_finish_run.assert_called_once_with(
         connection,
         1,
@@ -121,6 +139,9 @@ def test_run_pipeline_success(
         error_message=None,
     )
 
+    
+@patch("pipeline.orchestration.runner.export_transformed_records")
+@patch("pipeline.orchestration.runner.build_parquet_path")
 @patch("pipeline.orchestration.runner.finish_pipeline_run")
 @patch("pipeline.orchestration.runner.start_pipeline_run")
 @patch("pipeline.orchestration.runner.save_transformed_records")
@@ -138,6 +159,8 @@ def test_run_pipeline_continues_after_location_failure(
     mock_save_records,
     mock_start_run,
     mock_finish_run,
+    mock_build_parquet_path,
+    mock_export_records,
 ):
     connection = MagicMock()
 
@@ -159,6 +182,10 @@ def test_run_pipeline_continues_after_location_failure(
     records = [{"city": "New York", "aqi": 2}]
     mock_transform.return_value = records
     mock_resolve_location.return_value = 10
+
+    mock_build_parquet_path.return_value = (
+        "data/exports/new_york_run_1.parquet"
+    )
 
     result = run_pipeline(
         connection,
@@ -183,6 +210,17 @@ def test_run_pipeline_continues_after_location_failure(
         10,
         records,
     )
+
+    mock_build_parquet_path.assert_called_once_with(
+        "New York",
+        1,
+    )
+
+    mock_export_records.assert_called_once_with(
+        records,
+        "data/exports/new_york_run_1.parquet",
+    )
+
     mock_finish_run.assert_called_once_with(
         connection,
         1,
