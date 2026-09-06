@@ -56,3 +56,39 @@ def test_export_transformed_records_empty_records(tmp_path):
     assert result is None
     assert not output_path.exists()
 
+def test_export_creates_parent_directory(tmp_path):
+    output_path = (
+        tmp_path
+        / "nested"
+        / "exports"
+        / "air_quality.parquet"
+    )
+
+    records = [
+        {
+            "location": "Paris, FR",
+            "latitude": 48.8566,
+            "longitude": 2.3522,
+            "observed_at": datetime(
+                2026,
+                8,
+                1,
+                12,
+                0,
+                tzinfo=timezone.utc,
+            ),
+            "aqi": 1,
+            "pm2_5": 2.1,
+            "pm10": 3.4,
+            "no2": 5.0,
+            "o3": 32.0,
+        }
+    ]
+
+    export_transformed_records(
+        records,
+        output_path,
+    )
+
+    assert output_path.exists()
+
