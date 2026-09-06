@@ -92,3 +92,16 @@ def test_export_creates_parent_directory(tmp_path):
 
     assert output_path.exists()
 
+def test_build_parquet_path(monkeypatch, tmp_path):
+    monkeypatch.setenv(
+        "PARQUET_EXPORT_DIR",
+        str(tmp_path),
+    )
+
+    result = build_parquet_path(
+        "New York",
+        42,
+    )
+
+    assert result == tmp_path / "new_york_run_42.parquet"
+
