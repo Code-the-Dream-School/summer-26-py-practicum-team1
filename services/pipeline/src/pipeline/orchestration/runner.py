@@ -23,6 +23,11 @@ from pipeline.export.parquet import (
     get_parquet_export_dir,
 )
 
+from pipeline.export.parquet import (
+    build_parquet_path,
+    export_transformed_records,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -151,6 +156,27 @@ def run_pipeline(
                 )
 
                 records_processed += len(records)
+
+            # Parquet export
+            try:
+                parquet_path = build_parquet_path(
+                    city,
+                    run_id,
+                )
+
+                export_transformed_records(
+                    records,
+                    parquet_path,
+                )
+
+            except Exception as export_exc:
+                logger.exception(
+                    "Parquet export failed: "
+                    "run_id=%s city=%s error=%s",
+                    run_id,
+                    city,
+                    export_exc,
+                )
 
         except Exception as exc:
             logger.exception(
