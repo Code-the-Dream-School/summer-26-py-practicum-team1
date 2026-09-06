@@ -45,4 +45,14 @@ def test_export_transformed_records_creates_parquet(tmp_path):
     assert dataframe.iloc[0]["location"] == "Charlotte, US, NC"
     assert dataframe.iloc[0]["aqi"] == 2
 
-    
+def test_export_transformed_records_empty_records(tmp_path):
+    output_path = tmp_path / "empty.parquet"
+
+    result = export_transformed_records(
+        [],
+        output_path,
+    )
+
+    assert result is None
+    assert not output_path.exists()
+
