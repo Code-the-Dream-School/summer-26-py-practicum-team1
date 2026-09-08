@@ -43,7 +43,7 @@ The project includes:
 - Data transformation and validation.
 - PostgreSQL database storage for processed air quality data.
 - Parquet export of transformed records as a secondary output.
-- Alembic database migrations
+- Alembic database migrations.
 - Database upsert behavior to prevent duplicate records.
 - Pipeline run tracking for status, start and end times, processed records, and errors.
 - A shared pipeline runner that coordinates the ETL process.
@@ -53,7 +53,7 @@ The project includes:
 - Runtime configuration and environment variable documentation.
 - A data-serving layer for the dashboard.
 - A React/Vite dashboard for displaying air quality information.
-- End-to-end verification from the pipeline to the dashboard.
+- End-to-end verification of the data flow from the pipeline to the dashboard.
 
 The project supports two ways to trigger the pipeline:
 
@@ -202,6 +202,8 @@ This creates the required PostgreSQL tables.
 
 The pipeline can be triggered manually through the CLI.
 
+By default, the pipeline reads the configured cities from `services/pipeline/config/cities.csv`
+
 For example:
 
 ```bash 
@@ -226,7 +228,7 @@ The CLI reports whether the pipeline run succeeded  or failed.
 
 Pipeline execution information is stored in the pipeline_runs table.
 
-A successful run should have a status of :
+A successful run should have a status of:
 ```bash 
 success
 ```
