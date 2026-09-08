@@ -45,6 +45,7 @@ def test_export_transformed_records_creates_parquet(tmp_path):
     assert dataframe.iloc[0]["location"] == "Charlotte, US, NC"
     assert dataframe.iloc[0]["aqi"] == 2
 
+
 def test_export_transformed_records_empty_records(tmp_path):
     output_path = tmp_path / "empty.parquet"
 
@@ -55,6 +56,7 @@ def test_export_transformed_records_empty_records(tmp_path):
 
     assert result is None
     assert not output_path.exists()
+
 
 def test_export_creates_parent_directory(tmp_path):
     output_path = (
@@ -92,6 +94,7 @@ def test_export_creates_parent_directory(tmp_path):
 
     assert output_path.exists()
 
+
 def test_build_parquet_path(monkeypatch, tmp_path):
     monkeypatch.setenv(
         "PARQUET_EXPORT_DIR",
@@ -105,3 +108,19 @@ def test_build_parquet_path(monkeypatch, tmp_path):
 
     assert result == tmp_path / "new_york_run_42.parquet"
 
+
+def test_build_parquet_path_sanitizes_city_name(
+    monkeypatch,
+    tmp_path,
+):
+    monkeypatch.setenv(
+        "PARQUET_EXPORT_DIR",
+        str(tmp_path),
+    )
+
+    result = build_parquet_path(
+        "São Paulo",
+        42,
+    )
+
+    assert result == tmp_path / "sao_paulo_run_42.parquet"

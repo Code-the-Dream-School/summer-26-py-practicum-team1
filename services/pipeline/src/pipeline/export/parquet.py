@@ -5,6 +5,8 @@
 import logging
 from pathlib import Path
 import os
+import re
+import unicodedata
 
 import pandas as pd
 
@@ -19,11 +21,28 @@ def get_parquet_export_dir() -> Path:
     raw = os.getenv("PARQUET_EXPORT_DIR")
     return Path(raw) if raw else DEFAULT_PARQUET_EXPORT_DIR
 
+def _sanitize_city_name(city: str) -> str:
+    normalized = unicodedata.normalize(
+        "NFKD",
+        city.strip().lower(),
+    )
+
+    ascii_city = normalized.encode(
+        "ascii",
+        "ignore",
+    ).decode("ascii")
+
+    return re.sub(
+        r"[^a-z0-9]+",
+        "_",
+        ascii_city,
+    ).strip("_")
+
 def build_parquet_path(
     city: str,
     run_id: int,
 ) -> Path:
-    safe_city = city.strip().lower().replace(" ", "_")
+    safe_city = _sanitize_city_name(city)
 
     return (
         get_parquet_export_dir()
