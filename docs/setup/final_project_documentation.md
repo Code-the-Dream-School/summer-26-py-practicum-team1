@@ -6,7 +6,7 @@ City Air Tracker is a web application that allows users to view air quality data
 
 The project collects air pollution data from the OpenWeather API, transforms the data into our project format, stores the data in PostgreSQL, and prepares the data for the dashboard.
 
-The  main goal of the project is to make air quality data easier to view and understand.
+The main goal of the project is to make air quality data easier to view and understand.
 
 ## 2. Data Flow
 
@@ -42,8 +42,8 @@ The project includes:
 - Raw API response storage in PostgreSQL for traceability and debugging.
 - Data transformation and validation.
 - PostgreSQL database storage for processed air quality data.
-- Parquet export  of transformed records as a secondary output.
-- Alembic database migration
+- Parquet export of transformed records as a secondary output.
+- Alembic database migrations
 - Database upsert behavior to prevent duplicate records.
 - Pipeline run tracking for status, start and end times, processed records, and errors.
 - A shared pipeline runner that coordinates the ETL process.
@@ -83,7 +83,7 @@ The pipeline uses the following environment variables:
 - `PIPELINE_SCHEDULE_CRON` - cron schedule for scheduled pipeline runs.
 - `PIPELINE_HISTORY_HOURS` - number of hours of historical data to retrieve.
 - `CITIES_CSV_FILE` - path to the city input CSV file.
-- `PARQUET _EXPORT_DIR` - directory where transformed Parquet files are exported. The default ia data/export.
+- `PARQUET_EXPORT_DIR` - directory where transformed Parquet files are exported. The default is data/exports.
 
 For local development, these values should be provided through a `.env` file.
 
@@ -105,7 +105,7 @@ data/exports
 
 **Secrets**
 
-The .env file may cintain sensitive information such as API keys and database passwords.
+The .env file may contain sensitive information such as API keys and database passwords.
 
 The .env file must not be committed to GitHub.
 
@@ -119,7 +119,7 @@ PostgreSQL is used as the project's database.
 
 For local development, PostgreSQL runs in Docker.
 
-The local PostgreSQL configuration is :
+The local PostgreSQL configuration is:
 
 - Database: air_tracker
 - Username: postgres
@@ -139,7 +139,7 @@ Stop PostgreSQL with:
 docker compose down
 ```
 
-Alembic is used to manage database dchema migrations.
+Alembic is used to manage database schema migrations.
 
 Apply the migration with:
 
@@ -215,7 +215,7 @@ The pipeline performs the following steps:
 3. Geocodes cities when coordinates are needed.
 4. Requests air quality data from the OpenWeather API.
 5. Stores the raw API response in PostgreSQL.
-5. Transforms and validates the raw data.
+6. Transforms and validates the raw data.
 7. Upserts the processed observations into PostgreSQL.
 8. Exports transformed records to Parquet.
 9. Records the pipeline run status, timing, record count, and errors.
@@ -231,7 +231,7 @@ A successful run should have a status of :
 success
 ```
 
-**Step 5: Start the Flask Data APi**
+**Step 5: Start the Flask Data API**
 
 From the project root, start the dashboard data-serving layer:
 
@@ -241,7 +241,7 @@ PYTHONPATH=. python -m services.dashboard.server
 The API runs on:
 
 ```bash
-http://localhost:5000
+http://127.0.0.1:5000
 ```
 The main endpoints are:
 ```bash
@@ -297,7 +297,7 @@ The dashboard also handles common states such as loading, errors, and no availab
 
 ## 7. Scheduled Pipeline with Prefect
 
-In addition to the manual CLI, the project supports scheduled pipeline execution usin Prefect.
+In addition to the manual CLI, the project supports scheduled pipeline execution using Prefect.
 
 Start the local Prefect server:
 
